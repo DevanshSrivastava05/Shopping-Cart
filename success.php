@@ -53,7 +53,7 @@ if (isset($_GET['PayerID'])) {
 
         // Insert payment details into payment_details table
         $payment_id = generatePaymentId();
-        $payee_id = $Payer_ID;
+        $payee_id = $payment_id;
         $payer_fname = $first_name;
         $payer_lname = $last_name;
         $payer_email = $email;
@@ -86,19 +86,19 @@ if (isset($_GET['PayerID'])) {
         );
 
         // Display success message
-        echo "<h1>Your Payment has been successful</h1><br>";
-        echo "<h2>Order details, order product details, and payment details inserted successfully.</h2>";
+        echo "<h2><b>Your Payment has been successful</b></h1><br>";
+        echo "<h3><p>Thank you for your purchase!</p></h3>";
     } else {
         // Roll back the transaction if any query failed
         mysqli_rollback($con);
         echo "<h1>Your Payment has been failed</h1>";
     }
 
-    // Display payment details in a Bootstrap table
     echo '<div class="container mt-5">';
-    echo '<h2>Payment Details</h2>';
-    echo '<table class="table">';
-    echo '<thead>';
+    echo '<h2 class="mb-4"><b>Payment Details</></h2>';
+    echo '<div class="table-responsive">';
+    echo '<table class="table table-striped table-bordered">';
+    echo '<thead class="thead-dark">';
     echo '<tr>';
     echo '<th scope="col">Product Name</th>';
     echo '<th scope="col">Quantity</th>';
@@ -115,6 +115,7 @@ if (isset($_GET['PayerID'])) {
     echo '</thead>';
     echo '<tbody>';
 
+
     foreach ($_SESSION['cart'] as $key => $value) {
         $product_name = $value['Product_name'];
         $product_quantity = $value['Quantity'];
@@ -130,7 +131,7 @@ if (isset($_GET['PayerID'])) {
         echo '<td>' . $payment_status . '</td>';
         echo '<td>' . $payee_id . '</td>';
         echo '<td>' . $Payer_ID . '</td>';
-        echo '<td>' . $amt . '</td>';
+        echo '<td>' . 'Rs' . $amt . '</td>';
         echo '<td>' . $payment_method  . '</td>';
         echo '<td>' . $timestamp  . '</td>';
         echo '</tr>';
@@ -138,7 +139,7 @@ if (isset($_GET['PayerID'])) {
     echo '<tr>';
     echo '<td colspan="8"></td>';
     echo '<td>Total:</td>';
-    echo '<td>' . $mc_gross . '</td>';
+    echo '<td>' . 'Rs' . $mc_gross . '</td>';
     echo '<td></td>';
     echo '</tr>';
     echo '</tbody>';
@@ -156,7 +157,8 @@ function generatePaymentId()
     return uniqid('PAY');
 }
 ?>
+
 <a href="index.php" class="btn btn-primary">Back to Home</a>
-<a href="send_mail.php?order_id=<?php echo $order_id; ?>&action=email" name=" Email" class="btn btn-info">Email</a>
+<a href="send_mail.php?order_id=<?php echo $order_id; ?>&action=email&current_url=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" name="Email" class="btn btn-info">Email</a>
 
 <a href="invoice.php?order_id=<?php echo $order_id; ?>&action=download" class=" btn btn-success">Download Invoice</a>

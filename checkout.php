@@ -161,151 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['make-purchase']) && em
 }
 
 $selectedPaymentMethod = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
-$isAuthorizeNet = $selectedPaymentMethod === 'authorize_net';
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['make-purchase']) && $isAuthorizeNet) {
-	if (empty($_POST["first_name"])) {
-		$first_name_err = "Please enter your first name";
-	} else {
-		$first_name = test_input($_POST["first_name"]);
-		if (!preg_match('/^[a-zA-Z\s]+$/', $first_name)) {
-			$first_name_err = "First Name should only contains Alphabets";
-		}
-	}
 
-	if (empty($_POST["last_name"])) {
-		$last_name_err = "Please enter your last name";
-	} else {
-		$last_name = test_input($_POST["last_name"]);
-		if (!preg_match('/^[a-zA-Z\s]+$/', $last_name)) {
-			$last_name_err = "Last Name should only contains Alphabets";
-		}
-	}
-	if (empty($_POST["email"])) {
-		$Email_err = "Please enter your email address";
-	} else {
-		$Email = test_input($_POST["email"]);
-		if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
-			$Email_err = "Invalid email format";
-		}
-	}
-
-	if (empty($_POST["contact_no"])) {
-		$Mobile_num_err = "Please enter your mobile number";
-	} else {
-		$Mobile_num = test_input($_POST["contact_no"]);
-		if (!preg_match('/^\d{10}$/', $Mobile_num)) {
-			$Mobile_num_err = "Please enter a valid mobile number";
-		}
-	}
-	if (empty($_POST["address_line_1"])) {
-		$Address_err = "Please enter your address";
-	} else {
-		$Address = test_input($_POST["address_line_1"]);
-	}
-
-	if (empty($_POST["city"])) {
-		$City_err = "Please enter your city name";
-	} else {
-		$City = test_input($_POST["city"]);
-		if (!preg_match('/^[a-zA-Z\s]+$/', $City)) {
-			$City_error = "City name should only contains Alphabets";
-		}
-	}
-
-	if (empty($_POST["pincode"])) {
-		$Zip_err = "Please enter your zipcode";
-	} else {
-		$Zip = test_input($_POST["pincode"]);
-		if (!preg_match('/^\d{6}$/', $Zip)) {
-			$Zip_err = "Please enter valid Pincode";
-		}
-	}
-
-	if (empty($_POST["state"])) {
-		$State_err = "Please enter your state";
-	} else {
-		$State = test_input($_POST["state"]);
-		if (!preg_match('/^[a-zA-Z\s]+$/', $State)) {
-			$State_err = "State name should only contains Alphabets";
-		}
-	}
-
-	if (empty($_POST["country"])) {
-		$Country_err = "Please select your country";
-	} else {
-		$Country = test_input($_POST["country"]);
-	}
-
-	// Store and validate Card Number
-	$cardNumber = isset($_POST['card_number']) ? test_input($_POST['card_number']) : '';
-	if (empty($cardNumber)) {
-		$cardNumberErr = 'Please enter card number';
-	} elseif (!preg_match('/^[0-9]{16}$/', $cardNumber)) {
-		$cardNumberErr = 'Invalid card number format';
-	}
-
-	// Store and validate Expiry Month
-	$expiryMonth = isset($_POST['expiry_month']) ? test_input($_POST['expiry_month']) : '';
-	if (empty($expiryMonth)) {
-		$expiryMonthErr = 'Please enter expiry month';
-	} elseif (!preg_match('/^(0[1-9]|1[0-2])$/', $expiryMonth)) {
-		$expiryMonthErr = 'Invalid expiry month';
-	}
-
-	// Store and validate Expiry Year
-	$expiryYear = isset($_POST['expiry_year']) ? test_input($_POST['expiry_year']) : '';
-	if (empty($expiryYear)) {
-		$expiryYearErr = 'Please enter expiry year';
-	} elseif (!preg_match('/^[0-9]{4}$/', $expiryYear)) {
-		$expiryYearErr = 'Invalid expiry year';
-	}
-
-	// Store and validate CVC Code
-	$cvcCode = isset($_POST['cvc_code']) ? test_input($_POST['cvc_code']) : '';
-	if (empty($cvcCode)) {
-		$cvcCodeErr = 'Please enter CVC code';
-	} elseif (!preg_match('/^[0-9]{3}$/', $cvcCode)) {
-		$cvcCodeErr = 'Invalid CVC code';
-	}
-}
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['make-purchase']) && $isAuthorizeNet && empty($first_name_err) && empty($last_name_err) && empty($Email_err) && empty($Mobile_num_err) && empty($Address_err) && empty($City_err) && empty($Zip_err) && empty($State_err) && empty($Country_err) && empty($cardNumberErr) && empty($expiryMonthErr) && empty($expiryYearErr) && empty($cvcCodeErr)) {
-	$first_name =  $_REQUEST['first_name'];
-	$last_name = $_REQUEST['last_name'];
-	$Email = $_REQUEST['email'];
-	$Mobile_num = $_REQUEST['contact_no'];
-	$Address = $_REQUEST['address_line_1'];
-	$City = $_REQUEST['city'];
-	$Zip = $_REQUEST['pincode'];
-	$State = $_REQUEST['state'];
-	$Country = $_REQUEST['country'];
-	$cardNumber = $_REQUEST['card_number'];
-	$expiryMonth = $_REQUEST['expiry_month'];
-	$expiryYear = $_REQUEST['expiry_year'];
-	$cvcCode = $_REQUEST['cvc_code'];
-	// Initialize a variable to track the success of both operations
-	$success = true;
-
-
-	// Initialize an array to store product details
-	$product_details = array();
-
-	if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-		foreach ($_SESSION['cart'] as $item) {
-			$product_details[] = array(
-				'product_id' => $item['Product_id'],
-				'product_name' => $item['Product_name'],
-				'product_quantity' => $item['Quantity'],
-				'product_price_per_item' => $item['Price']
-			);
-		}
-	} else {
-		// If the cart is empty, set $success to false
-		$success = false;
-		echo "Cart is empty!";
-	}
-
-	$_SESSION['product_details'] = $product_details;
-}
 ?>
 <div class="container">
 	<div class="checkout">
@@ -412,67 +268,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['make-purchase']) && $i
 				<label for="payment_method">Select Payment Method*</label>
 				<select name="payment_method" class="form-control">
 					<option value="paypal" <?php echo (isset($_POST['payment_method']) && $_POST['payment_method'] == 'paypal') ? 'selected' : ''; ?>>PayPal</option>
-					<option value="authorize_net" <?php echo (isset($_POST['payment_method']) && $_POST['payment_method'] == 'authorize_net') ? 'selected' : ''; ?>>Authorize.Net</option>
+
 				</select>
 			</div>
 		</div>
 	</div>
-	<span style="color: red;">If Payment Method is Authorize.Net below fields needs to be filled also.</span>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-6 <?php echo $isAuthorizeNet  ?>">
-			<div class="form-group">
-				<label>Card Number <span class="color-danger">*</span></label>
-				<input type="text" name="card_number" class="form-control" placeholder="Enter card number 1111 1111 1111 1111" maxlength="16" value="<?php echo htmlspecialchars($cardNumber); ?>" />
-				<span style="color: red;"><?php echo $cardNumberErr; ?></span>
-			</div>
-		</div>
-		<div class="col-lg-3 col-md-3 col-sm-3 <?php echo $isAuthorizeNet ?>">
-			<div class="form-group">
-				<label>Expiry Month <span class="color-danger">*</span></label>
-				<input type="text" name="expiry_month" class="form-control" placeholder="MM" maxlength="2" value="<?php echo htmlspecialchars($expiryMonth); ?>" />
-				<span style="color: red;"><?php echo $expiryMonthErr; ?></span>
-			</div>
-		</div>
-		<div class="col-lg-3 col-md-3 col-sm-3 <?php echo $isAuthorizeNet ?>">
-			<div class="form-group">
-				<label>Expiry Year <span class="color-danger">*</span></label>
-				<input type="text" name="expiry_year" class="form-control" placeholder="YYYY" maxlength="4" value="<?php echo htmlspecialchars($expiryYear); ?>" />
-				<span style="color: red;"><?php echo $expiryYearErr; ?></span>
-			</div>
-		</div>
-		<div class="col-lg-3 col-md-3 col-sm-3 <?php echo $isAuthorizeNet ?>">
-			<div class="form-group">
-				<label>CVC Code <span class="color-danger">*</span></label>
-				<input type="text" name="cvc_code" class="form-control" placeholder="Enter CVC code" maxlength="3" value="<?php echo htmlspecialchars($cvcCode); ?>" />
-				<span style="color: red;"><?php echo $cvcCodeErr; ?></span>
-			</div>
-		</div>
-	</div>
 
+</div>
 
-	<!-- Example product details fields (modify as needed) -->
-	<?php
-	if (isset($_SESSION['product_details']) && !empty($_SESSION['product_details'])) {
-		foreach ($_SESSION['product_details'] as $product) {
-	?>
-			<input type="hidden" name="product_id[]" value="<?php echo $product['product_id']; ?>">
-			<input type="hidden" name="product_name[]" value="<?php echo $product['product_name']; ?>">
-			<input type="hidden" name="product_quantity[]" value="<?php echo $product['product_quantity']; ?>">
-			<input type="hidden" name="product_price_per_item[]" value="<?php echo $product['product_price_per_item']; ?>">
-			<!-- Add other hidden fields as needed for each product -->
-	<?php
-		}
+<?php
+if (isset($_SESSION['product_details']) && !empty($_SESSION['product_details'])) {
+	foreach ($_SESSION['product_details'] as $product) {
+?>
+		<input type="hidden" name="product_id[]" value="<?php echo $product['product_id']; ?>">
+		<input type="hidden" name="product_name[]" value="<?php echo $product['product_name']; ?>">
+		<input type="hidden" name="product_quantity[]" value="<?php echo $product['product_quantity']; ?>">
+		<input type="hidden" name="product_price_per_item[]" value="<?php echo $product['product_price_per_item']; ?>">
+<?php
 	}
-	?>
+}
+?>
 
-	<!-- Total amount and other fields -->
-	<input type="hidden" name="product_total_amount" value="<?php echo $_SESSION['total']; ?>">
-	<!-- Add other hidden fields as needed -->
+<input type="hidden" name="product_total_amount" value="<?php echo $_SESSION['total']; ?>">
+<input type="submit" class="btn btn-blue submit-button" name="make-purchase" value="Complete Purchase">
 
-	<!-- Submit button -->
-	<input type="submit" class="btn btn-blue" name="make-purchase" value="Complete Purchase">
-
-	</form>
+</form>
 </div>
 
 <?php include 'footer.php'; ?>

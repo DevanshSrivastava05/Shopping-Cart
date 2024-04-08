@@ -51,8 +51,6 @@ if (isset($_POST['remove_from_cart'])) {
 }
 
 
-print_r($_SESSION['cart']);
-
 // Display the cart
 ?>
 <div class="container">
@@ -124,23 +122,23 @@ print_r($_SESSION['cart']);
 					</tbody>
 				</table>
 				<div class="grand-total">
-					Total: <?php echo $grandTotal;
-							$_SESSION['total'] = $grandTotal; ?>
-
+					Total: <?php echo $grandTotal; ?>
 				</div>
+				<?php $_SESSION['total'] = $grandTotal; ?>
 			</div>
-		</form>
-
-		<div class="cart-footer">
-			<a href="index.php" class="btn btn-blue">
-				<i class="bi bi-arrow-down-left-square-fill"></i> Continue Shopping
-			</a>
-
-			<a href="checkout.php" class="btn btn-green">
-				<i class="bi bi-play-fill"></i> Check Out
-			</a>
-		</div>
 	</div>
+	</form>
+
+	<div class="cart-footer">
+		<a href="index.php" class="btn btn-blue">
+			<i class="bi bi-arrow-down-left-square-fill"></i> Continue Shopping
+		</a>
+
+		<a href="checkout.php" class="btn btn-green">
+			<i class="bi bi-play-fill"></i> Check Out
+		</a>
+	</div>
+</div>
 </div>
 
 <?php include 'footer.php'; ?>

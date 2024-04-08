@@ -20,10 +20,7 @@ $product_ids = $_POST['product_id'];
 $product_names = $_POST['product_name'];
 $product_quantities = $_POST['product_quantity'];
 $product_price_per_item = $_POST['product_price_per_item'];
-$cardNumber = $_POST['card_number'];
-$expiryMonth = $_POST['expiry_month'];
-$expiryYear = $_POST['expiry_year'];
-$cvcCode = $_POST['cvc_code'];
+
 
 // Function to handle PayPal payment
 function processPayPalPayment($con, $first_name, $last_name, $Email, $Mobile_num, $Address, $City, $Zip, $State, $Country, $product_ids, $product_names, $product_quantities, $product_price_per_item, $payment_method)
@@ -76,93 +73,6 @@ function processPayPalPayment($con, $first_name, $last_name, $Email, $Mobile_num
     exit();
 }
 
-// Function to handle Authorize.Net payment
-function processAuthorizeNetPayment(
-    $con,
-    $first_name,
-    $last_name,
-    $Email,
-    $Mobile_num,
-    $Address,
-    $City,
-    $Zip,
-    $State,
-    $Country,
-    $product_ids,
-    $product_names,
-    $product_price_per_item,
-    $product_quantities,
-    $payment_method,
-    $cardNumber,
-    $expiryMonth,
-    $expiryYear,
-    $cvcCode
-) {
-    include 'authorize_net.php';
-    $sandbox = true;
-
-    // Create an instance of the AuthorizeNetPayment class
-    $authorizeNetPayment = new AuthorizeNetPayment();
-
-    // Assuming you have the product details in arrays
-    $productDetails = array(
-        'ids' => $product_ids,
-        'names' => $product_names,
-        'quantities' => $product_quantities,
-        'prices' => $product_price_per_item, // Corrected array name
-        // Add other product details as needed
-    );
-
-    // Set the total amount based on product details
-    $totalAmount = calculateTotalAmount($productDetails);
-
-    // Set other customer and order details
-    $customerDetails = array(
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'email' => $Email,
-        'phone' => $Mobile_num,
-        'address' => $Address,
-        'city' => $City,
-        'zip' => $Zip,
-        'state' => $State,
-        'country' => $Country,
-        'payment_method' => $payment_method, // Corrected array key
-    );
-
-    $cardDetails = array(
-        'card_number' => $cardNumber,
-        'card_exp_month' => $expiryMonth,
-        'card_exp_year' => $expiryYear,
-        'card_cvc' => $cvcCode,
-    );
-
-    // Charge the credit card using Authorize.Net
-    $response = $authorizeNetPayment->chargeCreditCard($customerDetails, $cardDetails, $totalAmount, $productDetails, $sandbox);
-
-    // Check the response and take appropriate actions
-     if ($response->getMessages()->getResultCode() == "Ok") {
-        $transactionResponse = $response->getTransactionResponse();
-
-        // Check if $transactionResponse is not null and has a valid transaction ID
-        if ($transactionResponse && $transactionResponse->getTransId()) {
-            // Payment successful
-            // You might want to update your database with the payment status and other details
-            echo "Payment Successful. Transaction ID: " . $transactionResponse->getTransId();
-        } else {
-            // Handle the case where the transaction response or transaction ID is not available
-            echo "Payment Successful, but unable to retrieve Transaction ID.";
-        }
-    } else {
-        // Payment failed
-        $errorMessages = $response->getMessages()->getMessage();
-        foreach ($errorMessages as $error) {
-            echo "Payment Failed. Error Code: " . $error->getCode() . " - " . $error->getText() . "<br>";
-        }
-    }
-}
-
-// Function to calculate the total amount
 function calculateTotalAmount($productDetails)
 {
     // Initialize the total amount
@@ -189,36 +99,11 @@ foreach ($product_ids as $key => $current_product_id) {
     $current_product_quantity = $product_quantities[$key];
     $current_product_price = $product_price_per_item[$key];
     $amt = $current_product_price * $current_product_quantity;
-    echo "Product ID: $current_product_id, Name: $current_product_name, Quantity: $current_product_quantity, Price: $current_product_price<br>";
+
 
     // Call the payment processing function for each product
     if ($payment_method === 'paypal') {
         // Pass arrays of product details to the function
         processPayPalPayment($con, $first_name, $last_name, $Email, $Mobile_num, $Address, $City, $Zip, $State, $Country, $product_ids, $product_names, $product_quantities, $product_price_per_item, $payment_method);
-    } elseif ($payment_method === 'authorize_net') {
-        // Pass arrays of product details to the function
-        processAuthorizeNetPayment(
-            $con,
-            $first_name,
-            $last_name,
-            $Email,
-            $Mobile_num,
-            $Address,
-            $City,
-            $Zip,
-            $State,
-            $Country,
-            $product_ids,
-            $product_names,
-            $product_price_per_item,
-            $product_quantities,
-            $payment_method,
-            $cardNumber,
-            $expiryMonth,
-            $expiryYear,
-            $cvcCode
-        );
-    } else {
-        echo "Please select a valid payment method.";
     }
 }

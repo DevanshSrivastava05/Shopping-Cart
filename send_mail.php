@@ -2,6 +2,7 @@
 session_start();
 $order_id = $_GET['order_id'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
+$current_url = isset($_GET['current_url']) ? urldecode($_GET['current_url']) : '';
 date_default_timezone_set('Asia/Kolkata');
 $date = date("F j, Y");
 
@@ -127,6 +128,11 @@ if (isset($_SESSION['user_details']) && $action == 'email' && !empty($_SESSION['
 
     // Send email with the invoice attachment
     sendInvoiceEmail($email, $order_id, $attachmentFileName);
+    echo '<script>
+    alert("Email sent Successfully"); 
+    window.location.href = "' . $_SERVER['HTTP_REFERER'] . '";
+
+</script>';
 } else {
     echo 'Invalid action or user details.';
 }
